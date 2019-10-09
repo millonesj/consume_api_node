@@ -1,33 +1,10 @@
-/* var express = require('express');
-var cors = require('cors');
-var request = require('request');
-var app = express();
-app.use(express.bodyParser());
-app.use(cors());
-app.post('http://3.89.83.231:8080/',{
-  stage:0, 
-  key:''
-}, function(req, res){
-  console.log(req);
-  request('door', function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      var info = JSON.parse(body)
-      // var data stage, key, door
-      res.send(info);
-    }
-  } )
-});
-app.listen(3000);
-console.log("The server is now running on port 3000."); */
-
-/* stage, key, door */
-
-
 var Request = require("request");
+var endpoint = "http://3.89.83.231:8080/door";
+var keys = [];
 
 Request.post({
     "headers": { "content-type": "application/json" },
-    "url": "http://3.89.83.231:8080/door",
+    "url": endpoint,
     "body": JSON.stringify({
       "stage":0,
       "key":"False",
@@ -37,40 +14,70 @@ Request.post({
     if(error) {
         return console.dir(error);
     }
-    console.log(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::');
+    console.log('::::::::: OPENING DOOR ::::::::::::::');
     data = JSON.parse(body);
     key = data.key;
-    console.log('CUENTA ===> 1');
-    var contador = 1;
-    console.log('CONTADO: ' + contador)
-    console.log(data.key);
-    for (let door = 2; door <= 5; door++) {
+    keys.push(key);
+    for (let door = 2; door <= 4; door++) {
       
       Request.post({
         "headers": { "content-type": "application/json" },
-        "url": "http://3.89.83.231:8080/door",
+        "url": endpoint,
         "body": JSON.stringify({
           "stage":0,
           "key":key,
           "door":door
         })
     }, (error, response, body) => {
-      console.log('CONTADO: ' + contador);
-      console.log('DOOR ===> ' + door);
         if(error) {
             return console.dir(error);
         }
         data = JSON.parse(body);
         key = data.key;
-        contador++;
+        keys.push(key);
         console.dir(data);
         console.log(data.key);
     });
-
-
-
       
     }
 
 
 });
+
+
+/* 
+const fetch = require("node-fetch");
+const url = "https://jsonplaceholder.typicode.com/posts/1";
+const getData = async url => {
+  try {
+    const response = await fetch(url);
+    const json = await response.json();
+    console.log(json);
+  } catch (error) {
+    console.log(error);
+  }
+};
+getData(url);
+-------------------------------------------------------------------
+var fetch = require('node-fetch')
+
+async function getDataFromAPI() {
+    let response = await fetch("https://api.github.com/users/up1")
+    let data = await response.json()
+    console.log(JSON.stringify(data, null, "\t"))
+}
+
+getDataFromAPI()
+
+-------------------------------------------------------------------
+
+var fetch = require('node-fetch')
+
+function getDataFromAPI() {
+    return fetch("https://api.github.com/users/up1")
+        .then(response => response.json())
+        .then(data => console.log(JSON.stringify(data, null, "\t")))
+}
+
+getDataFromAPI()
+*/
